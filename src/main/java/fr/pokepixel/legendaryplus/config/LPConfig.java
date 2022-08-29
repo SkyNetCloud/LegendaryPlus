@@ -60,6 +60,7 @@ public class LPConfig {
         public static ForgeConfigSpec.IntValue limitshiny;
         public static ForgeConfigSpec.IntValue limitboss;
 
+
         public Config(ForgeConfigSpec.Builder builder) {
 
             builder.push(CATEGORY);
