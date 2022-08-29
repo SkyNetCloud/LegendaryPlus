@@ -58,5 +58,4 @@ public class PokemonInfo {
             this.player = player;
         }
     }
-
 }

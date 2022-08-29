@@ -4,14 +4,14 @@ import com.google.common.collect.Lists;
 import com.pixelmonmod.pixelmon.api.events.BeatWildPixelmonEvent;
 import com.pixelmonmod.pixelmon.api.events.CaptureEvent;
 import com.pixelmonmod.pixelmon.api.events.spawning.SpawnEvent;
-import com.pixelmonmod.pixelmon.entities.pixelmon.EntityPixelmon;
-import com.pixelmonmod.pixelmon.enums.EnumSpecies;
+import com.pixelmonmod.pixelmon.api.registries.PixelmonSpecies;
+import com.pixelmonmod.pixelmon.entities.pixelmon.PixelmonEntity;
+import fr.pokepixel.legendaryplus.config.LPConfig;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraftforge.common.config.ConfigCategory;
-import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -23,83 +23,79 @@ import static fr.pokepixel.legendaryplus.utils.GsonUtils.replaceOne;
 
 public class PixelmonEvents {
 
+
     @SubscribeEvent
     public void onPixelmonSpawn(SpawnEvent event) {
         final Entity entity = event.action.getOrCreateEntity();
-        if (entity instanceof EntityPixelmon) {
+        if (entity instanceof PixelmonEntity) {
             final Entity causeEntity = event.action.spawnLocation.cause;
-            if (!(causeEntity instanceof EntityPlayerMP)) {
+            if (!(causeEntity instanceof ServerPlayerEntity)) {
                 return;
             }
-            EntityPlayerMP playermp = (EntityPlayerMP) causeEntity;
-            EntityPixelmon pixelmon = (EntityPixelmon) entity;
+            ServerPlayerEntity playermp = (ServerPlayerEntity) causeEntity;
+            PixelmonEntity pixelmon = (PixelmonEntity) entity;
             boolean blacklist = true;
-            Configuration cfg = Legendaryplus.config;
-            ConfigCategory category = cfg.getCategory("general");
-            String[] list = category.get("blacklist").getStringList();
+            String[] list = LPConfig.Config.entityblacklist;
             List<String> list2 = Lists.newArrayList(list);
             for (String s : list2) {
-                if (s.equalsIgnoreCase(pixelmon.getName())) {
+                if (s.equalsIgnoreCase(String.valueOf(pixelmon.getName()))) {
                     blacklist = false;
                 }
             }
             if (blacklist && pixelmon.isLegendary() && !pixelmon.hasOwner() && !pixelmon.isBossPokemon()) {
                 Date date = new Date();
-                ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
                 UUID uuid = pixelmon.getUniqueID();
-                String state = cfglang.get("alive").getString();
-                int limit = category.get("limitleg").getInt();
+                String state = LPConfig.Lang.alive.toString();
+                int limit = LPConfig.Config.limitleg.get();
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastlegendary", info, limit);
-                if (cfg.getCategory("general").get("allplayers").getBoolean()) {
-                    if (pixelmon.getEntityWorld().getClosestPlayerToEntity(pixelmon, 500) != null) {
-                        String keytransform1 = translateAlternateColorCodes('&', cfglang.get("messagetoallplayers").getString())
+                if (LPConfig.Config.allplayers.get()) {
+                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon, 500) != null) {
+                        String keytransform1 = translateAlternateColorCodes('&', LPConfig.Lang.messagetoallplayers.toString())
                                 .replace("{legendname}", pixelmon.getLocalizedName())
-                                .replace("{player}", playermp.getName());
-                        playermp.server.getPlayerList().getPlayers().forEach(entityPlayerMP -> entityPlayerMP.sendMessage(new TextComponentString(keytransform1)));
+                                .replace((CharSequence) "{player}", (CharSequence) playermp.getName());
+                        playermp.server.getPlayerList().getPlayers().forEach(entityPlayerMP -> entityPlayerMP.sendMessage(new StringTextComponent(keytransform1), uuid));
                     }
                 }
-                if (cfg.getCategory("general").get("msgplayer").getBoolean()) {
-                    if (pixelmon.getEntityWorld().getClosestPlayerToEntity(pixelmon, 500) != null) {
-                        String keytransform1 = cfglang.get("messagetotheplayer").getString()
+                if (LPConfig.Config.msgplayer.get()) {
+                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon, 500) != null) {
+                        String keytransform1 = LPConfig.Lang.messagetotheplayer.toString()
                                 .replace("{legendname}", pixelmon.getLocalizedName())
-                                .replace("{player}", playermp.getName());
-                        playermp.sendMessage(new TextComponentString(translateAlternateColorCodes('&', keytransform1)));
+                                .replace((CharSequence) "{player}", (CharSequence) playermp.getName());
+                        playermp.sendMessage(new StringTextComponent(translateAlternateColorCodes('&', keytransform1)), uuid);
                     }
                 }
             }
-            if (blacklist && EnumSpecies.ultrabeasts.contains(pixelmon.getSpecies()) && !pixelmon.hasOwner() && !pixelmon.isBossPokemon()) {
+            if (blacklist && PixelmonSpecies.getUltraBeasts().contains(pixelmon.getSpecies()) && !pixelmon.hasOwner() && !pixelmon.isBossPokemon()) {
                 Date date = new Date();
-                ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
+
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
                 UUID uuid = pixelmon.getUniqueID();
-                String state = cfglang.get("alive").getString();
-                int limit = category.get("limitub").getInt();
+                String state = LPConfig.Lang.alive.toString();
+                int limit = LPConfig.Config.limitub.get();
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastultrabeast", info, limit);
             }
-            if (pixelmon.getPokemonData().isShiny() && !EnumSpecies.legendaries.contains(pixelmon.getSpecies()) && !EnumSpecies.ultrabeasts.contains(pixelmon.getSpecies()) && !pixelmon.isBossPokemon()) {
+            if (pixelmon.getPokemon().isShiny() && !PixelmonSpecies.getLegendaries().contains(pixelmon.getSpecies()) && !PixelmonSpecies.getUltraBeasts().contains(pixelmon.getSpecies()) && !pixelmon.isBossPokemon()) {
                 Date date = new Date();
-                ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
                 UUID uuid = pixelmon.getUniqueID();
-                String state = cfglang.get("alive").getString();
-                int limit = category.get("limitshiny").getInt();
+                String state = LPConfig.Lang.alive.toString();
+                int limit = LPConfig.Config.limitshiny.get();
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastshiny", info, limit);
             }
             if (pixelmon.isBossPokemon()){
                 Date date = new Date();
-                ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
                 UUID uuid = pixelmon.getUniqueID();
-                String state = cfglang.get("alive").getString();
-                int limit = category.get("limitboss").getInt();
+                String state = LPConfig.Lang.alive.toString();
+                int limit = LPConfig.Config.limitboss.get();
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastboss", info, limit);
             }
@@ -108,43 +104,38 @@ public class PixelmonEvents {
 
     @SubscribeEvent
     public void onCapture(CaptureEvent.SuccessfulCapture event) {
-        EntityPixelmon pokemon = event.getPokemon();
+        PixelmonEntity pokemon = event.getPokemon();
         //System.out.println("[onCaptureLP] uuid = " + pokemon.getUniqueID() );
-        if (EnumSpecies.legendaries.contains(pokemon.getSpecies())){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("captured").getString();
-            replaceOne("lastlegendary",event.player.getName(),state,event.getPokemon().getUniqueID());
-        }else if (EnumSpecies.ultrabeasts.contains(pokemon.getSpecies())){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("captured").getString();
-            replaceOne("lastultrabeast",event.player.getName(),state,pokemon.getUniqueID());
-        }else if (event.getPokemon().getPokemonData().isShiny()){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("captured").getString();
-            replaceOne("lastshiny",event.player.getName(),state,pokemon.getUniqueID());
+        if (PixelmonSpecies.getLegendaries().contains(pokemon.getSpecies())){
+            String state = LPConfig.Lang.captured.toString();
+            replaceOne("lastlegendary", String.valueOf(event.player.getName()),state,event.getPokemon().getUniqueID());
+        }else if (PixelmonSpecies.getUltraBeasts().contains(pokemon.getSpecies())){
+            String state = LPConfig.Lang.captured.toString();
+            replaceOne("lastultrabeast", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
+        }else if (event.getPokemon().getPokemon().isShiny()){
+            String state = LPConfig.Lang.captured.toString();
+            replaceOne("lastshiny", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
         }
     }
 
     @SubscribeEvent
     public void onKill(BeatWildPixelmonEvent event) {
-        EntityPixelmon pokemon = (EntityPixelmon) event.wpp.getEntity();
-        if (EnumSpecies.legendaries.contains(pokemon.getSpecies())){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("defeated").getString();
-            replaceOne("lastlegendary",event.player.getName(),state,pokemon.getUniqueID());
-        }else if (EnumSpecies.ultrabeasts.contains(pokemon.getSpecies())){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("defeated").getString();
-            replaceOne("lastultrabeast",event.player.getName(),state,pokemon.getUniqueID());
-        }else if (pokemon.getPokemonData().isShiny()){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("defeated").getString();
-            replaceOne("lastshiny",event.player.getName(),state,pokemon.getUniqueID());
+        PixelmonEntity pokemon = (PixelmonEntity) event.wpp.getEntity();
+        if (PixelmonSpecies.getLegendaries().contains(pokemon.getSpecies())){
+            String state = LPConfig.Lang.defeated.toString();
+            replaceOne("lastlegendary", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
+        }else if (PixelmonSpecies.getUltraBeasts().contains(pokemon.getSpecies())){
+
+            String state = LPConfig.Lang.defeated.toString() ;
+            replaceOne("lastultrabeast", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
+        }else if (pokemon.getPokemon().isShiny()){
+
+            String state = LPConfig.Lang.defeated.toString() ;
+            replaceOne("lastshiny", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
         }else if (pokemon.isBossPokemon()){
-            ConfigCategory cfglang = Legendaryplus.lang.getCategory("lang");
-            String state = cfglang.get("defeated").getString();
-            replaceOne("lastboss",event.player.getName(),state,pokemon.getUniqueID());
+
+            String state = LPConfig.Lang.defeated.toString() ;
+            replaceOne("lastboss", String.valueOf(event.player.getName()),state,pokemon.getUniqueID());
         }
     }
-
 }

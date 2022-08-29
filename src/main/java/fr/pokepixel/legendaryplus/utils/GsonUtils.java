@@ -1,7 +1,7 @@
 package fr.pokepixel.legendaryplus.utils;
 
 import com.google.common.collect.Lists;
-import fr.pokepixel.legendaryplus.Legendaryplus;
+import fr.pokepixel.legendaryplus.LegendaryPlus;
 import fr.pokepixel.legendaryplus.PokemonInfo;
 
 import java.io.*;
@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static fr.pokepixel.legendaryplus.Legendaryplus.gson;
+import static fr.pokepixel.legendaryplus.LegendaryPlus.gson;
 
 public class GsonUtils {
 
     public static void writeJson(String filename, PokemonInfo object){
-        try (PrintWriter writer = new PrintWriter(new File(Legendaryplus.directory, filename + ".json"),"UTF-8")) {
+        try (PrintWriter writer = new PrintWriter(new File(LegendaryPlus.directory, filename + ".json"),"UTF-8")) {
             gson.toJson(object, writer);
         } catch (IOException e) {
             System.out.println("Error 01");
@@ -25,7 +25,7 @@ public class GsonUtils {
     }
 
     public static Optional<PokemonInfo> readJson(String filename){
-        try (Reader reader = new InputStreamReader(new FileInputStream(new File(Legendaryplus.directory, filename + ".json")), StandardCharsets.UTF_8)) {
+        try (Reader reader = new InputStreamReader(new FileInputStream(new File(LegendaryPlus.directory, filename + ".json")), StandardCharsets.UTF_8)) {
             return Optional.of(gson.fromJson(reader, PokemonInfo.class));
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,6 +65,4 @@ public class GsonUtils {
         });
         writeJson(file,new PokemonInfo(list));
     }
-
-
 }

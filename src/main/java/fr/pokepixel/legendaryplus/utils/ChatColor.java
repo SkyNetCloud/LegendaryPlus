@@ -6,9 +6,6 @@ import org.apache.commons.lang3.Validate;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * All supported color values for chat
- */
 public enum ChatColor {
     /**
      * Represents black
