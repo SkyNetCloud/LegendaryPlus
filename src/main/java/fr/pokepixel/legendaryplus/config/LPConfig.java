@@ -30,25 +30,25 @@ public class LPConfig {
 
     public static class Config {
 
-        private static final String CATEGORY = "general";
+        private static final String CATEGORY = "general".toUpperCase();
 
-        public static final String CATEGORY_LANG = "lang";
+        public static final String CATEGORY_LANG = "lang".toUpperCase();
 
-        public static ForgeConfigSpec.ConfigValue<String> legendlist; //= "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.";
-        public static ForgeConfigSpec.ConfigValue<String> ultrabeastlist; // = "The Ultrabeast is {ubname}, and the nearest player is {player} in the biome {biome}.";
-        public static ForgeConfigSpec.ConfigValue<String> lastpoke; //= "{x}) Name : {pokemon} - Date : {days} day(s), {hours} hour(s), {minutes} minute(s) ago. [{state}] {playerph}";
-        public static ForgeConfigSpec.ConfigValue<String> titletrad; //= "A {legendname} has spawned around you {player}!";
-        public static ForgeConfigSpec.ConfigValue<String> messagetotheplayer; //= "A {legendname} has spawned around you {player}!";
-        public static ForgeConfigSpec.ConfigValue<String> messagetoallplayers; //= "A {legendname} has spawned around you {player}!";
+        public static ForgeConfigSpec.ConfigValue<String> legendlist;
+        public static ForgeConfigSpec.ConfigValue<String> ultrabeastlist;
+        public static ForgeConfigSpec.ConfigValue<String> lastpoke;
+        public static ForgeConfigSpec.ConfigValue<String> titletrad;
+        public static ForgeConfigSpec.ConfigValue<String> messagetotheplayer;
+        public static ForgeConfigSpec.ConfigValue<String> messagetoallplayers;
 
         //State
-        public static ForgeConfigSpec.ConfigValue<String> alive ; //= "Alive";
-        public static ForgeConfigSpec.ConfigValue<String> captured; // = "Captured";
-        public static ForgeConfigSpec.ConfigValue<String> defeated; // = "Defeated";
+        public static ForgeConfigSpec.ConfigValue<String> alive ;
+        public static ForgeConfigSpec.ConfigValue<String> captured;
+        public static ForgeConfigSpec.ConfigValue<String> defeated;
 
-        public static ForgeConfigSpec.ConfigValue<String> despawned; // = "Despawned";
+        public static ForgeConfigSpec.ConfigValue<String> despawned;
 
-        private static ForgeConfigSpec.ConfigValue<String> playerph; //  = "- {player}";
+        public static ForgeConfigSpec.ConfigValue<String> playerph;
 
         public static String[] entityblacklist = new String[]{"empty"};
 
@@ -61,6 +61,8 @@ public class LPConfig {
         public static ForgeConfigSpec.IntValue limitub;
         public static ForgeConfigSpec.IntValue limitshiny;
         public static ForgeConfigSpec.IntValue limitboss;
+
+        public static ForgeConfigSpec.IntValue limitmythical;
 
 
         public Config(ForgeConfigSpec.Builder builder) {
@@ -77,6 +79,7 @@ public class LPConfig {
             limitshiny = builder.comment("Limit of shiny that will be displayed in /lastshiny").defineInRange("limitshiny", 3, 1, 10);
             limitub = builder.comment("Limit of ultrabeast that will be displayed in /lastultrabeast").defineInRange("limitub", 3, 1, 10);
             limitboss = builder.comment("Limit of boss that will be displayed in /lastboss").defineInRange("limitboss", 3, 1, 10);
+            limitmythical = builder.comment("Limit of mythical that will be displayed in /lastmythical").defineInRange("limitmythical", 3, 1, 10);
 
             builder.pop();
 

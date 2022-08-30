@@ -20,15 +20,17 @@ public class PokemonInfo {
     }
 
     public static class Info{
-        private final String name;
+        private String name;
         private String state;
 
         private String player;
 
         private final UUID uuid;
-        private final long ms;
+        private long ms;
 
+        //#TODO  Find a Replacement for String player system cuz it doesn't work
         public Info(String name, long ms, UUID uuid, String state, String player){
+
             this.name = name;
             this.ms = ms;
             this.uuid = uuid;
@@ -54,10 +56,6 @@ public class PokemonInfo {
 
         public void setState(String state) {
             this.state = state;
-        }
-
-        public void setPlayer(String player) {
-            this.player = player;
         }
 
     }

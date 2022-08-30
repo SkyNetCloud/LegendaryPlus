@@ -62,7 +62,7 @@ public class GsonUtils {
             //System.out.println("find poke");
             if (info1.getUuid().equals(uuid)){
                 //System.out.println("replace player");
-                //info1.setPlayer(player);
+                //info1.setPlayer(player); //#TODO Fix PlayerName so it will show right json files
                 info1.setState(state);
             }
         });

@@ -1,6 +1,5 @@
 package fr.pokepixel.legendaryplus.command;
 
-import static fr.pokepixel.legendaryplus.utils.Utils.sendMessage;
 
 public class LPCommands {
 

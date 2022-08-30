@@ -22,10 +22,8 @@ import static fr.pokepixel.legendaryplus.utils.GsonUtils.*;
 
 public class PixelmonEvents {
 
-    private static long elapsedDays,elapsedHours,elapsedMinutes;
-
     @SubscribeEvent
-    public void onPixelmonSpawn(SpawnEvent event) {
+    public void onPixelmonSpawnEvent(SpawnEvent event) {
         final Entity entity = event.action.getOrCreateEntity();
         if (entity instanceof PixelmonEntity) {
             final Entity causeEntity = event.action.spawnLocation.cause;
@@ -42,7 +40,7 @@ public class PixelmonEvents {
                     blacklist = false;
                 }
             }
-            if (blacklist && pixelmon.isLegendary() && !pixelmon.hasOwner() && !pixelmon.isBossPokemon()) {
+            if (blacklist && pixelmon.isLegendary() && !pixelmon.hasOwner() && !pixelmon.isBossPokemon() && !pixelmon.getSpecies().isMythical() ) {
                 Date date = new Date();
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
@@ -52,25 +50,24 @@ public class PixelmonEvents {
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastlegendary", info, limit);
                 if (LPConfig.Config.allplayers.get()) {
-                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon, 500) != null) {
+                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon.getEntity(), 50) != null) {
                         String keytransform1 = translateAlternateColorCodes('&', LPConfig.Config.messagetoallplayers.toString())
-                                .replace("{legendname}", pixelmon.getLocalizedName())
-                                .replace("{player}", (CharSequence) playermp.getName());
+                                .replace((CharSequence) "{legendname}", (CharSequence) pixelmon.getLocalizedName())
+                                .replace((CharSequence) "{player}", (CharSequence) "player");
                         playermp.server.getPlayerList().getPlayers().forEach(entityPlayerMP -> entityPlayerMP.sendMessage(new StringTextComponent(keytransform1), uuid));
                     }
                 }
                 if (LPConfig.Config.msgplayer.get()) {
-                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon, 500) != null) {
+                    if (pixelmon.getEntityWorld().getClosestPlayer(pixelmon.getEntity(), 50) != null) {
                         String keytransform1 = LPConfig.Config.messagetotheplayer.get()
-                                .replace("{legendname}", pixelmon.getLocalizedName())
-                                .replace("{player}", (CharSequence) playermp.getName());
+                                .replace((CharSequence) "{legendname}", pixelmon.getLocalizedName().toString())
+                                .replace((CharSequence) "{player}", (CharSequence) "player");
                         playermp.sendMessage(new StringTextComponent(translateAlternateColorCodes('&', keytransform1)), uuid);
                     }
                 }
             }
-            if (blacklist && pixelmon.getSpecies().isLegendary() && !pixelmon.hasOwner() && !pixelmon.isBossPokemon()) {
+            if (blacklist && pixelmon.getSpecies().isUltraBeast() &&   !pixelmon.hasOwner() && !pixelmon.isBossPokemon() && !pixelmon.getSpecies().isLegendary() && !pixelmon.getSpecies().isMythical()) {
                 Date date = new Date();
-
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
                 UUID uuid = UUID.randomUUID();
@@ -79,7 +76,7 @@ public class PixelmonEvents {
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastultrabeast", info, limit);
             }
-            if (pixelmon.getPokemon().isShiny() && !pixelmon.getSpecies().isLegendary() && !pixelmon.getSpecies().isUltraBeast() && !pixelmon.isBossPokemon()) {
+            if (pixelmon.getPokemon().isShiny() && !pixelmon.getSpecies().isLegendary() && !pixelmon.getSpecies().isUltraBeast() && !pixelmon.isBossPokemon() && !pixelmon.getSpecies().isMythical()) {
                 Date date = new Date();
                 String name = pixelmon.getLocalizedName();
                 long ms = date.getTime();
@@ -99,39 +96,55 @@ public class PixelmonEvents {
                 PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
                 replaceLatest("lastboss", info, limit);
             }
+            if (pixelmon.getSpecies().isMythical()){
+                Date date = new Date();
+                String name = pixelmon.getLocalizedName();
+                long ms = date.getTime();
+                UUID uuid = UUID.randomUUID();
+                String state = LPConfig.Config.alive.get();
+                int limit = LPConfig.Config.limitmythical.get();
+                PokemonInfo.Info info = new PokemonInfo.Info(name, ms, uuid, state, "");
+                replaceLatest("lastmythical", info, limit);
+            }
         }
     }
 
     @SubscribeEvent
-    public void onCapture(CaptureEvent.SuccessfulCapture event) {
+    public void onCaptureEvent(CaptureEvent.SuccessfulCapture event) {
         PixelmonEntity pokemon = event.getPokemon();
         if (pokemon.getSpecies().isLegendary()){
             String state = LPConfig.Config.captured.toString();
-            replaceOne("lastlegendary", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString(),state,UUID.randomUUID());
+            replaceOne("lastlegendary", state,UUID.randomUUID());
         }else if (pokemon.getSpecies().isUltraBeast()){
             String state = LPConfig.Config.captured.toString();
-            replaceOne("lastultrabeast", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString(),state,pokemon.getUniqueID());
+            replaceOne("lastultrabeast", state,pokemon.getUniqueID());
         }else if (event.getPokemon().getPokemon().isShiny()){
             String state = LPConfig.Config.captured.toString();
-            replaceOne("lastshiny", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString() ,state,UUID.randomUUID());
+            replaceOne("lastshiny", state,UUID.randomUUID());
+        } else if (event.getPokemon().getSpecies().isMythical()) {
+            String state = LPConfig.Config.captured.toString();
+            replaceOne("lastmythical", state,UUID.randomUUID());
         }
     }
 
     @SubscribeEvent
-    public void onKill(BeatWildPixelmonEvent event) {
+    public void onKillEvent(BeatWildPixelmonEvent event) {
         PixelmonEntity pokemon = (PixelmonEntity) event.wpp.getEntity();
-        if (pokemon.getSpecies().isLegendary()){
-            String state = LPConfig.Config.defeated.toString();
-            replaceOne("lastlegendary","{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString(),state, pokemon.getUniqueID());
+        if (pokemon.getSpecies().isLegendary() && pokemon.getSpecies().isMythical()){
+            String state = LPConfig.Config.defeated.get();
+            replaceOne("lastlegendary", state, UUID.randomUUID());
         }else if (pokemon.getSpecies().isUltraBeast()){
-            String state = LPConfig.Config.defeated.toString() ;
-            replaceOne("lastultrabeast", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString().toString(),state, pokemon.getUniqueID());
+            String state = LPConfig.Config.defeated.get() ;
+            replaceOne("lastultrabeast", state, UUID.randomUUID());
         }else if (pokemon.getPokemon().isShiny()){
-            String state = LPConfig.Config.defeated.toString() ;
-            replaceOne("lastshiny", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString(),state, pokemon.getUniqueID());
+            String state = LPConfig.Config.defeated.get() ;
+            replaceOne("lastshiny", state,UUID.randomUUID());
         }else if (pokemon.isBossPokemon()){
-            String state = LPConfig.Config.defeated.toString() ;
-            replaceOne("lastboss", "{player}".replace((CharSequence) "{player}", (CharSequence) event.player.getName()).toString(),state, pokemon.getUniqueID());
+            String state = LPConfig.Config.defeated.get() ;
+            replaceOne("lastboss", state, UUID.randomUUID());
+        } else if (pokemon.getSpecies().isMythical()){
+            String state = LPConfig.Config.defeated.get();
+            replaceOne("lastmythical", state, UUID.randomUUID());
         }
     }
 

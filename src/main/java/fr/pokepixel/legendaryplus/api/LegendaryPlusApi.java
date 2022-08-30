@@ -11,25 +11,25 @@ public class LegendaryPlusApi {
 
     public static void addLegendary(String name, long millis, UUID uuid) {
         int limit = LPConfig.Config.limitleg.get();
-        String state = LPConfig.Lang.alive;
+        String state = LPConfig.Config.alive.get();
         replaceLatest("lastlegendary",new PokemonInfo.Info(name,millis,uuid,state,""),limit);
     }
 
     public static void addUB(String name, long millis, UUID uuid) {
         int limit = LPConfig.Config.limitub.get();
-        String state = LPConfig.Lang.alive;
+        String state = LPConfig.Config.alive.get();
         replaceLatest("lastultrabeast",new PokemonInfo.Info(name,millis,uuid,state,""),limit);
     }
 
     public static void addShiny(String name, long millis, UUID uuid) {
         int limit = LPConfig.Config.limitshiny.get();
-        String state = LPConfig.Lang.alive;
+        String state = LPConfig.Config.alive.get();
         replaceLatest("lastshiny",new PokemonInfo.Info(name,millis,uuid,state,""),limit);
     }
 
     public static void addBoss(String name, long millis, UUID uuid) {
         int limit = LPConfig.Config.limitboss.get();
-        String state = LPConfig.Lang.alive;
+        String state = LPConfig.Config.alive.get();
         replaceLatest("lastboss",new PokemonInfo.Info(name,millis,uuid,state,""),limit);
     }
 }
