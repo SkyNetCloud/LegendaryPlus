@@ -3,9 +3,12 @@ package fr.pokepixel.legendaryplus.utils;
 import com.google.common.collect.Lists;
 import fr.pokepixel.legendaryplus.LegendaryPlus;
 import fr.pokepixel.legendaryplus.PokemonInfo;
+import net.minecraft.entity.player.PlayerEntity;
+import org.lwjgl.system.CallbackI;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +28,7 @@ public class GsonUtils {
     }
 
     public static Optional<PokemonInfo> readJson(String filename){
-        try (Reader reader = new InputStreamReader(new FileInputStream(new File(LegendaryPlus.directory, filename + ".json")), StandardCharsets.UTF_8)) {
+        try (Reader reader = new InputStreamReader(Files.newInputStream(new File(LegendaryPlus.directory, filename + ".json").toPath()), StandardCharsets.UTF_8)) {
             return Optional.of(gson.fromJson(reader, PokemonInfo.class));
         } catch (IOException e) {
             e.printStackTrace();
@@ -53,13 +56,13 @@ public class GsonUtils {
         writeJson(file,new PokemonInfo(list));
     }
 
-    public static void replaceOne(String file, String player, String state, UUID uuid){
+    public static void replaceOne(String file,String state, UUID uuid){
         List<PokemonInfo.Info> list = listPoke(file);
         list.forEach(info1 -> {
             //System.out.println("find poke");
             if (info1.getUuid().equals(uuid)){
                 //System.out.println("replace player");
-                info1.setPlayer(player);
+                //info1.setPlayer(player);
                 info1.setState(state);
             }
         });
