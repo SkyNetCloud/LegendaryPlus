@@ -1,5 +1,9 @@
 package fr.pokepixel.legendaryplus;
 
+import com.google.common.base.Supplier;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.text.ITextComponent;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -16,9 +20,11 @@ public class PokemonInfo {
     }
 
     public static class Info{
-
         private final String name;
-        private String state,player;
+        private String state;
+
+        private String player;
+
         private final UUID uuid;
         private final long ms;
 
@@ -46,10 +52,6 @@ public class PokemonInfo {
             return state;
         }
 
-        public String getPlayer() {
-            return player;
-        }
-
         public void setState(String state) {
             this.state = state;
         }
@@ -57,5 +59,6 @@ public class PokemonInfo {
         public void setPlayer(String player) {
             this.player = player;
         }
+
     }
 }
