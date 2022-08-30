@@ -3,6 +3,7 @@ package fr.pokepixel.legendaryplus.config;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Arrays;
@@ -11,7 +12,6 @@ import java.util.function.Supplier;
 
 
 public class LPConfig {
-
 
     public static final ForgeConfigSpec CONFIG_SPEC;
     public static final Config CONFIG;
@@ -23,30 +23,32 @@ public class LPConfig {
         CONFIG_SPEC = specPair.getRight();
         CONFIG = specPair.getLeft();
     }
-
-    public static class Lang {
-
-        public static final String CATEGORY_LANG = "lang";
-        public static String legendlist = "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.";
-        public static String ultrabeastlist = "The Ultrabeast is {ubname}, and the nearest player is {player} in the biome {biome}.";
-        public static String lastpoke = "{x}) Name : {pokemon} - Date : {days} day(s), {hours} hour(s), {minutes} minute(s) ago. [{state}] {playerph}";
-        public static String titletrad = "A {legendname} has spawned around you {player}!";
-        public static String messagetotheplayer = "A {legendname} has spawned around you {player}!";
-        public static String messagetoallplayers = "A {legendname} has spawned around {player}!";
-        //State
-        public static String alive = "Alive";
-        public static String captured = "Captured";
-        public static String defeated = "Defeated";
-        public static String despawned = "Despawned";
-
+    public static void bake() {
+        LPConfig.bake();
     }
-
-
 
 
     public static class Config {
 
         private static final String CATEGORY = "general";
+
+        public static final String CATEGORY_LANG = "lang";
+
+        public static ForgeConfigSpec.ConfigValue<String> legendlist; //= "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.";
+        public static ForgeConfigSpec.ConfigValue<String> ultrabeastlist; // = "The Ultrabeast is {ubname}, and the nearest player is {player} in the biome {biome}.";
+        public static ForgeConfigSpec.ConfigValue<String> lastpoke; //= "{x}) Name : {pokemon} - Date : {days} day(s), {hours} hour(s), {minutes} minute(s) ago. [{state}] {playerph}";
+        public static ForgeConfigSpec.ConfigValue<String> titletrad; //= "A {legendname} has spawned around you {player}!";
+        public static ForgeConfigSpec.ConfigValue<String> messagetotheplayer; //= "A {legendname} has spawned around you {player}!";
+        public static ForgeConfigSpec.ConfigValue<String> messagetoallplayers; //= "A {legendname} has spawned around you {player}!";
+
+        //State
+        public static ForgeConfigSpec.ConfigValue<String> alive ; //= "Alive";
+        public static ForgeConfigSpec.ConfigValue<String> captured; // = "Captured";
+        public static ForgeConfigSpec.ConfigValue<String> defeated; // = "Defeated";
+
+        public static ForgeConfigSpec.ConfigValue<String> despawned; // = "Despawned";
+
+        private static ForgeConfigSpec.ConfigValue<String> playerph; //  = "- {player}";
 
         public static String[] entityblacklist = new String[]{"empty"};
 
@@ -72,9 +74,28 @@ public class LPConfig {
             allplayers = builder.comment("Set to true to send the msgplayer to all players instead of only which is the nearest of the legendary").define("allplayers", false);
 
             limitleg = builder.comment("Limit of legendary that will be displayed in /lastlegend").defineInRange("limitleg", 3, 1, 10);
-            limitshiny = builder.comment("Limit of shiny that will be displayed in /lastshiny").defineInRange("limitleg", 3, 1, 10);
-            limitub = builder.comment("Limit of ultrabeast that will be displayed in /lastultrabeast").defineInRange("limitleg", 3, 1, 10);
-            limitboss = builder.comment("Limit of boss that will be displayed in /lastboss").defineInRange("limitleg", 3, 1, 10);
+            limitshiny = builder.comment("Limit of shiny that will be displayed in /lastshiny").defineInRange("limitshiny", 3, 1, 10);
+            limitub = builder.comment("Limit of ultrabeast that will be displayed in /lastultrabeast").defineInRange("limitub", 3, 1, 10);
+            limitboss = builder.comment("Limit of boss that will be displayed in /lastboss").defineInRange("limitboss", 3, 1, 10);
+
+            builder.pop();
+
+            builder.push(CATEGORY_LANG);
+
+            legendlist = builder.comment("The message that's send out when a legendary spawn").define("legendlist", "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.");
+            ultrabeastlist = builder.comment("The message that's send out when a Ultrabeast spawn").define("legendlist", "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.");
+            lastpoke = builder.comment("Last pokemon").define("lastpoke", "The legendary is {legendname}, and the nearest playerg is {player} in the biome {biome}.");
+            titletrad = builder.comment("Title Rad").define("titletrad", "A {legendname} has spawned around you {player}!");
+            messagetotheplayer = builder.comment("Message to the player").define("messagetotheplayer", "A {legendname} has spawned around you {player}!");
+            messagetoallplayers = builder.comment("Message to all player").define("messagetoallplayers", "A {legendname} has spawned around {player}!");
+
+            alive = builder.comment("Alive Text").define("alive", "Alive");
+            captured = builder.comment("Captured Text").define("captured", "Captured");
+            defeated = builder.comment("Defeated Text").define("defeated", "Defeated");
+            despawned = builder.comment("Despawned Text").define("despawned", "Despawned");
+
+            playerph = builder.comment("Player placeholder").define("playerplaceholder", "- {player}");
+
 
         }
 
