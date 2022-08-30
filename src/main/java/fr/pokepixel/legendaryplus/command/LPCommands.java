@@ -1,75 +1,40 @@
 package fr.pokepixel.legendaryplus.command;
 
-import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import fr.pokepixel.legendaryplus.utils.TextUtil;
-import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.MessageArgument;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
+import static fr.pokepixel.legendaryplus.utils.Utils.sendMessage;
 
 public class LPCommands {
 
 
     public static class LastBossCmd {
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
+        //#TODO ADD LastBossCmd
 
-        }
     }
 
     public static class LastLegendCmd {
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
+        //#TODO ADD LastLegendCmd
 
     }
 
     public static class LastShinyCms {
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
+        //#TODO ADD LastShinyCms
 
     }
 
     public static class LastUBCmd {
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
-
-
+        //#TODO ADD LastUBCmd
     }
 
     public static class LegendInfos{
-
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
-
-
+        //#TODO ADD LegendInfos
     }
 
     public static class LegendaryPlusReloadCmd {
-
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
-
+        //#TODO ADD LegendaryPlusReloadCmd
 
     }
 
     public static class UltrabestInfo {
+        //#TODO ADD UltrabestInfo
 
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
-
-    }
-
-    public static class ModInfoCmd {
-        public static void register(CommandDispatcher<CommandSource> dispatcher){
-
-        }
     }
 }
